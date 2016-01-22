@@ -15,7 +15,8 @@ You need a recent Matlab or Octave version, a C compiler, that is
 supported by Matlab (e.g. gcc, Microsoft Visual C++) or Octave.
 
 The first step is to get lua and its header files.
-This can be done by building it or getting precompiled libraries.
+This can be done by getting the sources and building it or
+getting precompiled libraries.
 If you get precompiled libraries, make sure that they are compatible with
 your C compiler.
 
@@ -50,19 +51,25 @@ This will give you a Matlab/Octave struct `s` with fields `important` and
 
     important = {1, 2, 3}
     crucial = 3
+    need = {look = 'at this'}
     
     important[1] = crucial
+    need["answer"] = 42
 
 By calling
 
-    s = readLua('config.lua', {'important', 'crucial'});
+    s = readLua('config.lua', {'important', 'crucial', 'need'});
 
 we would get the follwing struct
     
-    s = 
+    s =
         important: [3 2 3]
           crucial: 3
-
+             need: [1x1 struct] 
+    
+    s.need = 
+          look: 'at this'
+        answer: 42
 
 ## Restrictions
 
@@ -72,14 +79,38 @@ compatibility of the version of the library you use.
 There is, however, the restriction that you can only read the following
 type of variables at the moment:
 
- * Numbers
- * Vectors, that means tables that have numeric keys from 1 up to the
-   number of keys in the table.
- * Strings
+ * _Numbers:_
+   
+   For example: `2`, `3.0`, `2.3e-8`
+ * _Vectors:_ That means tables that are sequences
+   (see [lua manual](http://www.lua.org/manual/5.2/manual.html#3.4.6)),
+   where the values have to be numeric.
+   
+   For example: `{1, 2.0, 3e7}`, `{9, 8, foo='bar'}` (`foo` would be dropped)
+   
+   Not possible: `{1, 2, nil, 4}`, `{'baz', 2, 3}`
+
+   Please, use only numeric keys that are integer and positive.
+ * _Strings:_
+   
+   For example: `''`, `'bar'`
+ * _Tables:_
+   
+   Where all keys are strings that may be Matlab/Octave struct fields.
+   (Note that if you have keys that can *not* be a struct field, you will
+    most likely crash Matlab/Octave)
+   Nesting is possible.
+   
+   For example: `{a=1, b='foo'}`, `{a={a=1}}`
+   
+   Not possible: `{["1asd"] = 7}`
 
 
 ## Future
 
-I will hopefully implement the functionality to support lua tables, that
-work like Matlab/Octave structs and I will maybe implement support for
-reading matrices.
+I might:
+
+ * Include binaries in this repo
+ * Implement support for reading matrices
+ * Fix possible bugs
+ * Improve error handling

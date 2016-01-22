@@ -123,17 +123,45 @@ void addStringFieldToOut(mxArray* out,
    return;
 }
 
-void myLuaGetByKeyAndAddFieldToOut(lua_State* L,
-                                   mxArray* out,
-                                   const char* key) {
+void addStructFieldToOut(lua_State* L,
+                         mxArray* out,
+                         const char* key) {
+   /* Create struct array */
+   mxArray* strct;
+   strct = mxCreateStructMatrix((mwSize) 1, (mwSize) 1, 0, NULL);
+   
+   /* Add field to struct out */
+   addFieldToOut(out, key);
+   
+   /* Assign strct to out struct */
+   mxSetField(out, (mwIndex) 0, key, strct);
+
+   /* Iterate over elements of the table */
+   lua_pushnil(L);
+
+   while (lua_next(L, -2) != 0) {
+      /* Key is now at -2 and value at -1 (previous key was popped) */
+      /* Check if the key is a string */
+      if (!lua_isstring(L, -2)) {
+         lua_close(L);
+         mexErrMsgIdAndTxt("readLua:nonStringKeyInTable",
+            "Lua table %s (not treated as vector) has a non-string key.");
+      }
+      /* Add the key-value-pair to the strct variable */
+      myLuaGetTopAndAddFieldToOut(L, strct, lua_tostring(L, -2));
+   }
+   
+   return;
+}
+
+void myLuaGetTopAndAddFieldToOut(lua_State* L,
+                                 mxArray* out,
+                                 const char* key) {
    int ltype;
    double* array;
    size_t arrayLen;
    const char* string;
    size_t stringLen;
-   
-   /* Put lua variable on top of stack */
-   lua_getglobal(L, key);
    
    /* Get the type of the variable on top of stack */
    ltype = lua_type(L, -1);
@@ -147,10 +175,30 @@ void myLuaGetByKeyAndAddFieldToOut(lua_State* L,
       /* A number is a matrix of format 1x1 */
       addMatrixFieldToOut(out, key, 1, 1, array);
    } else if (ltype == LUA_TTABLE) {
-      /* Assume a vector and get it */
-      array = my_lua_get_and_pop_vector(L, &arrayLen);
-      /* A vector is a matrix of format 1xarrayLen */
-      addMatrixFieldToOut(out, key, 1, arrayLen, array);
+      /* If the table has the numeric key 1 with a numeric value,
+       * we treat it as a vector */
+      /* Push index */
+      lua_pushnumber(L, 1);
+      /* Get element */
+      lua_gettable(L, -2);
+      /* Test if vector */
+      if (lua_isnumber(L, -1)) {
+         /* Pop value (key was popped by lua_gettable) */
+         lua_pop(L, 1);         
+         /* We are dealing with a vector */
+         array = my_lua_get_and_pop_vector(L, &arrayLen);
+         /* A vector is a matrix of format 1xarrayLen */
+         addMatrixFieldToOut(out, key, 1, arrayLen, array);
+      } else {
+         /* Pop value (key was popped by lua_gettable) */
+         lua_pop(L, 1);
+         
+         /* Table is treated as a record */         
+         addStructFieldToOut(L, out, key);
+         
+         /* Pop table */
+         lua_pop(L, 1);
+      }
    } else if (ltype == LUA_TSTRING) {
       /* Get a string and its length */
       string = my_lua_get_and_pop_string(L, &stringLen);
@@ -159,8 +207,20 @@ void myLuaGetByKeyAndAddFieldToOut(lua_State* L,
    } else {
       lua_close(L);
       mexErrMsgIdAndTxt("readLua:UnsupportedType",
-              "Lua variable %s has unsupported type.");
+              "Lua variable %s has unsupported type.", key);
    }
+   
+   return;
+}
+
+void myLuaGetByKeyAndAddFieldToOut(lua_State* L,
+                                   mxArray* out,
+                                   const char* key) {
+   /* Put lua variable on top of stack */
+   lua_getglobal(L, key);
+   
+   /* Add the top of stack to out */
+   myLuaGetTopAndAddFieldToOut(L, out, key);
    
    return;
 }
