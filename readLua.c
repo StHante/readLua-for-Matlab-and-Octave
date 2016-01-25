@@ -226,6 +226,10 @@ void myLuaGetTopAndAddFieldToOut(lua_State* L,
       string = my_lua_get_and_pop_string(L, &stringLen);
       /* Add it to out */
       addStringFieldToOut(out, key, stringLen, string);
+   } else if (ltype == LUA_TNIL) {
+      /* Given variable does not exist or is given the value nil,
+       * we treat this as an empty array */
+      addMatrixFieldToOut(out, key, 1, 0, NULL);
    } else {
       lua_close(L);
       mexErrMsgIdAndTxt("readLua:UnsupportedType",

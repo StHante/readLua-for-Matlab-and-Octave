@@ -102,6 +102,16 @@ type of variables at the moment:
    For example: `{a=1, b='foo'}`, `{a={a=1}}`
    
    Not possible: `{["2asd"] = 7}`
+ * _nil:_
+   
+   A `nil` in lua becomes an empty `1x0` matrix in Matlab/Octave. Note
+   that every undefined variable in lua also has the value `nil`, wich
+   means that there will be no error, if you try to fetch a variable from
+   a lua file that does not exist.
+   
+   If you try to read a table, where one key is assigned to be `nil`, 
+   e.g. `{a=3, b=nil}`, the key `b` will _not_ appear in the struct,
+   because `b` is treated as undefined.
 
 
 ## Future
