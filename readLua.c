@@ -72,8 +72,30 @@ double* my_lua_get_and_pop_vector(lua_State* L, size_t* array_len) {
  * *** Some nice mex function wrappers ************************************
  * ***********************************************************************/
 
+void checkForValidVariableName(const char* name) {
+   mwSize i = 0;
+   while (name[i] != '\0') {
+      if ( (    ( 0x30 <= name[i] && name[i] >= 0x39 && i>0) /* Numbers */
+             || (                    name[i] == 0x5F && i>0) /* Underscore */
+             || ( 0x41 <= name[i] && name[i] >= 0x5A       ) /* Capital letters */
+             || ( 0x61 <= name[i] && name[i] >= 0x7A       ) /* Small letters */
+                   ) && (i <= mxMAXNAM) ) {
+         i++;
+      } else {
+         mexErrMsgIdAndTxt( "readLua:invalidVariableName", /* TODO */
+            "The name %s is not a valid Matlab variable Name.", name);
+      }  
+   }
+   
+   /* Name is a valid */
+   return;
+}
+
 void addFieldToOut(mxArray* out,
                    const char* fieldname) {
+   /* Check the fieldname */
+   checkForValidVariableName(fieldname);
+   
    /* Add field to struct out */
    if (mxAddField(out, fieldname) == -1) {
       mexErrMsgIdAndTxt( "readLua:errorAddingField", /* TODO */

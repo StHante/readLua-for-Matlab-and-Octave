@@ -97,13 +97,11 @@ type of variables at the moment:
  * _Tables:_
    
    Where all keys are strings that may be Matlab/Octave struct fields.
-   (Note that if you have keys that can *not* be a struct field, you will
-    most likely crash Matlab/Octave)
    Nesting is possible.
    
    For example: `{a=1, b='foo'}`, `{a={a=1}}`
    
-   Not possible: `{["1asd"] = 7}`
+   Not possible: `{["2asd"] = 7}`
 
 
 ## Future
