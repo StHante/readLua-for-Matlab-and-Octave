@@ -75,10 +75,10 @@ double* my_lua_get_and_pop_vector(lua_State* L, size_t* array_len) {
 void checkForValidVariableName(const char* name) {
    mwSize i = 0;
    while (name[i] != '\0') {
-      if ( (    ( 0x30 <= name[i] && name[i] >= 0x39 && i>0) /* Numbers */
+      if ( (    ( 0x30 <= name[i] && name[i] <= 0x39 && i>0) /* Numbers */
              || (                    name[i] == 0x5F && i>0) /* Underscore */
-             || ( 0x41 <= name[i] && name[i] >= 0x5A       ) /* Capital letters */
-             || ( 0x61 <= name[i] && name[i] >= 0x7A       ) /* Small letters */
+             || ( 0x41 <= name[i] && name[i] <= 0x5A       ) /* Capital letters */
+             || ( 0x61 <= name[i] && name[i] <= 0x7A       ) /* Small letters */
                    ) && (i <= mxMAXNAM) ) {
          i++;
       } else {
