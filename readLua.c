@@ -75,6 +75,14 @@ double* my_lua_get_and_pop_vector(lua_State* L, size_t* array_len) {
  * *** Some nice mex function wrappers ************************************
  * ***********************************************************************/
 
+/* If we are on octave, the macro mxMAXNAM is for some reason sometimes
+ * called mxMAXNAME (unfortunately) */
+#ifdef HAVE_OCTAVE
+#ifndef mxMAXNAM
+#define mxMAXNAM mxMAXNAME
+#endif
+#endif
+
 void checkForValidVariableName(const char* name) {
    mwSize i = 0;
    while (name[i] != '\0') {
@@ -239,6 +247,8 @@ void myLuaGetTopAndAddFieldToOut(lua_State* L,
       /* Given variable does not exist or is given the value nil,
        * we treat this as an empty array */
       addMatrixFieldToOut(out, key, 1, 0, NULL);
+      /* Make stack clean */
+      lua_pop(L, 1);
    } else {
       lua_close(L);
       mexErrMsgIdAndTxt("readLua:UnsupportedType",
