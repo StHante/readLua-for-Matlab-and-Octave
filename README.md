@@ -12,6 +12,8 @@ Read more about lua here: http://www.lua.org/
 
 I added a subdirectory `bin`, where there are subdirectories for Platform and then Matlab/Octave-Versions which I compiled. If you have a newer Matlab Version, those might still work, but I can't say for sure.
 
+I have used Lua 5.2 for builing.
+
 I decided to do this, because it looks that is has become a pain to install the correct compiler in Matlab.
 
 ## Building
