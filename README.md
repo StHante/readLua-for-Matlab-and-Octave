@@ -3,8 +3,7 @@
 A MEX function that executes a lua file and then gets variables
 from it.
 
-Everything was only tested on a 64bit Ubuntu 14.04 machine in Matlab
-and Octave.
+Everything was only tested on a 64bit Ubuntu and Windows 10 in Matlab 2016.
 Help for testing on other platforms and machines is appreciated.
 
 Read more about lua here: http://www.lua.org/
