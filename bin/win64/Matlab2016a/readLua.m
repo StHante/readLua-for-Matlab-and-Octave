@@ -10,8 +10,8 @@
 %
 %   Created with:
 %   MATLAB 9.0
-%   (R2016a) %          Platform: glnxa64
-%     MEX extension: mexa64
-%          Compiler: gcc
+%   (R2016a) %          Platform: win64
+%     MEX extension: mexw64
+%          Compiler: MinGW64 Compiler (C)
 
 %   MEX-File function.
