@@ -3,11 +3,18 @@
 A MEX function that executes a lua file and then gets variables
 from it.
 
-Everything was only tested on a 64bit Ubuntu 14.04 machine in Matlab
-and Octave.
+Everything was only tested on a 64bit Ubuntu and Windows 10 in Matlab 2016.
 Help for testing on other platforms and machines is appreciated.
 
 Read more about lua here: http://www.lua.org/
+
+## Get binaries
+
+I added a subdirectory `bin`, where there are subdirectories for Platform and then Matlab/Octave-Versions which I compiled. If you have a newer Matlab Version, those might still work, but I can't say for sure.
+
+I have used Lua 5.2 for builing.
+
+I decided to do this, because it looks that is has become a pain to install the correct compiler in Matlab.
 
 ## Building
 
@@ -118,7 +125,7 @@ type of variables at the moment:
 
 I might:
 
- * Include binaries in this repo
+ * Include more binaries in this repo
  * Implement support for reading matrices
  * Fix possible bugs
  * Improve error handling
